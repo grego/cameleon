@@ -163,6 +163,7 @@ impl StreamingLoop {
         let mut payload_buf_opt = None;
         let mut leader_buf = vec![0; self.params.leader_size];
         let inner = self.inner.lock().unwrap();
+        let mut payload_opt = None;
 
         'outer: loop {
             // Stop the loop when
@@ -216,6 +217,12 @@ impl StreamingLoop {
                 self.sender.try_send(Err(err)).ok();
                 continue;
             };
+
+            if let Some(payload) = payload_opt.take() {
+                if let Err(err) = self.sender.try_send(Ok(payload)) {
+                    warn!(?err);
+                }
+            }
 
             // We've submitted the bulk transfers, now wait for them.
             let mut first_buf_len = None;
@@ -291,9 +298,7 @@ impl StreamingLoop {
                 }
             };
 
-            if let Err(err) = self.sender.try_send(Ok(payload)) {
-                warn!(?err);
-            }
+            payload_opt = Some(payload);
         }
     }
 }
