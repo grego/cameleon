@@ -30,9 +30,15 @@ ureq = "3.2.0"
 async-std = "1.13.2"
 futures-channel = "0.3.32"
 futures-util = "0.3.32"
+bytemuck = { version = "1.25.0", features = ["extern_crate_alloc"] }
+zstd = { version = "0.13.3", features = ["zstdmt"] }
+ljpeg = "0.1.2"
+mlv = "0.1.1"
+chrono = "0.4.45"
 
 [dev-dependencies]
 trybuild = "1.0.42"
+minifb = "0.28.0"
 
 [features]
 libusb = ["cameleon-device/libusb"]
@@ -45,7 +51,7 @@ required-features = ["libusb"]
 [[example]]
 name = "stream"
 path = "examples/stream.rs"
-required-features = ["libusb"]
+# required-features = ["libusb"]
 
 [[example]]
 name = "params"
