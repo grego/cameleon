@@ -42,7 +42,7 @@ fn write_mlv() -> Sender<Vec<u8>> {
         frame_size: 2048 * 1088,
         bits_per_pixel: 12,
         black_level: 0,
-        white_level: 2 << 12,
+        white_level: 1 << 12,
         origin: [0, 0],
         size: [2048, 1088],
         dng_active_area: [0; 4],
@@ -133,8 +133,18 @@ fn main() {
     // Limit to max ~60 fps update rate
     window.set_target_fps(60);
 
+    let mut cameras = Vec::new();
+    let addrs = nix::ifaddrs::getifaddrs().unwrap();
+    for ifaddr in addrs.filter_map(|a| a.address) {
+        if let Some(address) = ifaddr.as_sockaddr_in() {
+            let ip = address.ip();
+            match enumerate_cameras(ip) {
+                Ok(cams) => cameras.extend(cams),
+                Err(e) => eprintln!("Error finding cameras on {ip}:{e}"),
+            }
+        }
+    }
     // Enumerates cameras connected to the host.
-    let mut cameras = enumerate_cameras(Ipv4Addr::new(169, 254, 247, 66)).unwrap();
 
     if cameras.is_empty() {
         println!("no camera found!");

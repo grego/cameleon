@@ -35,6 +35,7 @@ zstd = { version = "0.13.3", features = ["zstdmt"] }
 ljpeg = "0.1.2"
 mlv = "0.1.1"
 chrono = "0.4.45"
+nix = { version = "0.31", features = ["net"] }
 
 [dev-dependencies]
 trybuild = "1.0.42"
